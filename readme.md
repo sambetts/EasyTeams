@@ -8,21 +8,21 @@ Download and open solution with Visual Studio 2019: EasyTeams.sln.
 Solution is configured to use the dev environment already (keys to be secured correctly later). 
 
 Contents include:
--EasyTeams.Bot - the bot web-project.
--EasyTeams.Common - common library between all projects.
--EasyTeams.Functions - Azure Functions. Just used to receive "create meeting" messages for adding events to calendars for meeting attendees.
--EasyTeams.Tests - Unit-tests and a test console.
--EasyTeams.Web - Simple website with a JavaScript client for the webchat.
+* EasyTeams.Bot - the bot web-project.
+* EasyTeams.Common - common library between all projects.
+* EasyTeams.Functions - Azure Functions. Just used to receive "create meeting" messages for adding events to calendars for meeting attendees.
+* EasyTeams.Tests - Unit-tests and a test console.
+* EasyTeams.Web - Simple website with a JavaScript client for the webchat.
 
 ## Requirements
 Requires an Azure AD application registration with the following rights to Graph API:
 
 Application permissions:
--Calendars.ReadWrite
+* Calendars.ReadWrite
 
 Delegated permissions:
--User.Read
--OnlineMeetings.ReadWrite
+* User.Read
+* OnlineMeetings.ReadWrite
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
