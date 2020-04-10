@@ -51,6 +51,9 @@ namespace EasyTeams.Bot
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseWebSockets();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
