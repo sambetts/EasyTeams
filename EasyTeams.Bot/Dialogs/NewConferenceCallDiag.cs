@@ -27,7 +27,7 @@ namespace EasyTeams.Bot.Dialogs
                    new OAuthPromptSettings
                    {
                        ConnectionName = EasyTeamsConstants.BOT_OAUTH_CONNECTION_NAME,
-                       Text = "I need your permission to do people searches & check your email address...",
+                       Text = "I need your permission to do access Office 365: people searches, your email address, and your calendar...",
                        Title = "Login to Office 365"
                    }, LoginValidator));
             AddDialog(new DateResolverDialog());                // When
@@ -130,7 +130,7 @@ namespace EasyTeams.Bot.Dialogs
             var tokenResponse = (TokenResponse)stepContext.Result;
             if (tokenResponse != null)
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("You are now logged in."), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Looks like I've got access to your Office 365 data I need..."), cancellationToken);
 
                 // Remember OAuth token
                 newCallDetails.OAuthToken = tokenResponse;

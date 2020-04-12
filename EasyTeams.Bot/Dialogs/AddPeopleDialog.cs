@@ -41,7 +41,7 @@ namespace EasyTeams.Bot.Dialogs
         {
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions() 
             { 
-                Prompt = MessageFactory.Text("Who should we add? Search for people or enter an email address of an external contact."), 
+                Prompt = MessageFactory.Text("Who should we add to the meeting? Search for people by a name/email, or for external contacts, enter their email address..."), 
                 RetryPrompt = MessageFactory.Text("Seriously, who?")
             });
             
