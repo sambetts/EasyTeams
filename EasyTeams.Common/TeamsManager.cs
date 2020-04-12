@@ -23,7 +23,7 @@ namespace EasyTeamsBot.Common
         /// <summary>
         /// No settings required; already have an OAuth token.
         /// </summary>
-        public PrecachedAuthTokenTeamsManager(string token) : base(null)
+        public PrecachedAuthTokenTeamsManager(string token, SystemSettings settings) : base(settings)
         {
             _client = new GraphServiceClient(new DelegateAuthenticationProvider(
                 async (requestMessage) =>
@@ -106,7 +106,9 @@ namespace EasyTeamsBot.Common
         public TeamsManager(SystemSettings systemSettings)
         {
             Cache = new TeamsObjectCache(this);
-            Settings = systemSettings;
+
+            this.Settings = systemSettings ?? throw new ArgumentNullException(nameof(systemSettings));
+
         }
 
         #endregion
@@ -126,56 +128,53 @@ namespace EasyTeamsBot.Common
 
             var newMeeting = await Client.Users[requestingUser.Id].OnlineMeetings.Request().AddAsync(call);
 
-            // Add events?
-            if (newConfCall.CreateCalendarEvents.HasValue && newConfCall.CreateCalendarEvents.Value)
+            // Add events.  Fire functions app
+            using (var client = new HttpClient())
             {
-                // Fire functions app
-                using (var client = new HttpClient())
+                CreateEventsRequest requestContent = new CreateEventsRequest() { Meeting = newMeeting, Request = newConfCall };
+
+                // Add functions key if defined in configuration
+                if (!string.IsNullOrEmpty(Settings.FunctionAppKey))
                 {
-                    CreateEventsRequest requestContent = new CreateEventsRequest() { Meeting = newMeeting, Request = newConfCall };
-
-                    // Add functions key if defined in configuration
-                    if (!string.IsNullOrEmpty(Settings.FunctionAppKey))
-                    {
-                        client.DefaultRequestHeaders.Add("x-functions-key", Settings.FunctionAppKey);
-                    }
-
-                    // POST request to functions app to create meetings
-                    var response = await client.PostAsync(
-                        Settings.NewEventCreationURL,
-                         new StringContent(JsonConvert.SerializeObject(requestContent), System.Text.Encoding.UTF8, "application/json"));
-                    try
-                    {
-                        response.EnsureSuccessStatusCode();
-                    }
-                    catch (HttpRequestException ex)
-                    {
-
-                        string requestBody = await response.Content.ReadAsStringAsync();
-                        string msg = $"Could not submit meeting request to function app @ {Settings.NewEventCreationURL}.";
-                        if (throwExceptionIfFuncionAppCallFails)
-                        {
-                            throw new ApplicationException(msg, ex);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"ERROR: {msg}");
-                        }
-                    }
+                    client.DefaultRequestHeaders.Add("x-functions-key", Settings.FunctionAppKey);
                 }
 
+                // POST request to functions app to create meetings
+                var response = await client.PostAsync(
+                    Settings.NewEventCreationURL,
+                     new StringContent(JsonConvert.SerializeObject(requestContent), System.Text.Encoding.UTF8, "application/json"));
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (HttpRequestException ex)
+                {
+
+                    string requestBody = await response.Content.ReadAsStringAsync();
+                    string msg = $"Could not submit meeting request to function app @ {Settings.NewEventCreationURL}.";
+                    if (throwExceptionIfFuncionAppCallFails)
+                    {
+                        throw new ApplicationException(msg, ex);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"ERROR: {msg}");
+                    }
+                }
             }
+
+
 
             return newMeeting;
         }
 
         /// <summary>
-        /// Gets a list of user that will participating in the call
+        /// Gets a list of users in the org that will participating in the call. Excludes external users
         /// </summary>
-        public async Task<List<User>> GetParticipants(NewConferenceCallRequest newConfCall)
+        public async Task<List<User>> GetInternalParticipants(NewConferenceCallRequest newConfCall)
         {
             List<User> users = new List<User>();
-            foreach (var recipient in newConfCall.Recipients)
+            foreach (var recipient in newConfCall.Recipients.Where(r=> !r.IsExternal))
             {
                 var user = await Cache.GetUser(recipient.Email);
                 users.Add(user);

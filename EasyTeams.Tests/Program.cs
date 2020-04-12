@@ -31,12 +31,12 @@ namespace Tests.UnitTests
             {
                 Subject = "Test Meeting",
                 Start = DateTime.Now.AddHours(1),
-                OnBehalfOf = new ContactEmailAddress("admin@M365x176143.onmicrosoft.com"),
-                Recipients = new List<ContactEmailAddress>()
+                OnBehalfOf = new MeetingContact("admin@M365x176143.onmicrosoft.com", false),
+                Recipients = new List<MeetingContact>()
                 {
-                    new ContactEmailAddress("meganb@M365x176143.onmicrosoft.com")
+                    new MeetingContact("meganb@M365x176143.onmicrosoft.com", false),
+                    new MeetingContact("someguy@contoso.onmicrosoft.com", true)
                 },
-                CreateCalendarEvents = true,
                 TimeZoneName = TimeZoneInfo.Local.Id,
                 MinutesLong = 30
             };

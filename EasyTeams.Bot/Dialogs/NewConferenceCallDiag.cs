@@ -1,5 +1,6 @@
 ﻿using EasyTeams.Bot.Models;
 using EasyTeams.Common;
+using EasyTeams.Common.Config;
 using EasyTeamsBot.Common;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -17,13 +18,15 @@ namespace EasyTeams.Bot.Dialogs
     /// </summary>
     public class NewConferenceCallDiag : CancelAndHelpDialog
     {
-        public NewConferenceCallDiag() : base(nameof(NewConferenceCallDiag))
+        public NewConferenceCallDiag(SystemSettings settings) : base(nameof(NewConferenceCallDiag))
         {
+            this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+
             AddDialog(new OAuthPrompt(
                    nameof(OAuthPrompt),
                    new OAuthPromptSettings
                    {
-                       ConnectionName = BotConstants.BOT_OAUTH_CONNECTION_NAME,
+                       ConnectionName = EasyTeamsConstants.BOT_OAUTH_CONNECTION_NAME,
                        Text = "I need your permission to do people searches & check your email address...",
                        Title = "Login to Office 365"
                    }, LoginValidator));
@@ -39,12 +42,14 @@ namespace EasyTeams.Bot.Dialogs
                     ConfirmMeetingDetails,
                     ConfirmFinish
                }));
-            AddDialog(new AddPeopleDialog(nameof(AddPeopleDialog)));        // Add people
+            AddDialog(new AddPeopleDialog(Settings));        // Add people
             AddDialog(new NumberPrompt<int>(nameof(NumberPrompt<int>), DurationValidator));    // Duration prompt
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));              // Conf call details confirmation
 
             InitialDialogId = nameof(WaterfallDialog);
         }
+
+        public SystemSettings Settings { get; set; }
 
         private async Task<DialogTurnResult> WhatSubject(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -131,10 +136,10 @@ namespace EasyTeams.Bot.Dialogs
                 newCallDetails.OAuthToken = tokenResponse;
 
                 // Figure out email address of this user
-                var teamsManager = new PrecachedAuthTokenTeamsManager(newCallDetails.OAuthToken.Token);
+                var teamsManager = new PrecachedAuthTokenTeamsManager(newCallDetails.OAuthToken.Token, Settings);
                 var user = await teamsManager.Client.Me.Request().Select("UserPrincipalName,MailboxSettings").GetAsync();
                 var userMailboxSettings = await teamsManager.Client.Me.Request().GetAsync();
-                newCallDetails.OnBehalfOf = new Common.BusinessLogic.ContactEmailAddress(user.UserPrincipalName);
+                newCallDetails.OnBehalfOf = new Common.BusinessLogic.MeetingContact(user.UserPrincipalName, false);
                 newCallDetails.TimeZoneName = user.MailboxSettings.TimeZone;
             }
 
@@ -177,7 +182,7 @@ namespace EasyTeams.Bot.Dialogs
                 var newCallDetails = (GraphNewConferenceCallRequest)stepContext.Options;
 
                 // Create call
-                var teamsManager = new PrecachedAuthTokenTeamsManager(newCallDetails.OAuthToken.Token);
+                var teamsManager = new PrecachedAuthTokenTeamsManager(newCallDetails.OAuthToken.Token, Settings);
                 var call = await teamsManager.CreateNewConferenceCall(newCallDetails, true);
 
                 // Send adaptive card with Teams details

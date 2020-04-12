@@ -14,10 +14,10 @@ namespace EasyTeams.Bot.Models
     {
         public PeopleSearchList()
         {
-            Recipients = new List<ContactEmailAddress>();
+            Recipients = new List<MeetingContact>();
         }
 
-        public List<ContactEmailAddress> Recipients { get; set; }
+        public List<MeetingContact> Recipients { get; set; }
 
         public TokenResponse OAuthToken { get; set; }
     }

@@ -15,8 +15,7 @@ namespace EasyTeams.Common.BusinessLogic
     {
         public NewConferenceCallRequest()
         {
-            this.Recipients = new List<ContactEmailAddress>();
-            this.CreateCalendarEvents = true;
+            this.Recipients = new List<MeetingContact>();
         }
 
         #region Props
@@ -36,16 +35,11 @@ namespace EasyTeams.Common.BusinessLogic
             } 
         }
         public int? MinutesLong { get; set; }
-        public ContactEmailAddress OnBehalfOf { get; set; }
+        public MeetingContact OnBehalfOf { get; set; }
         public string Subject { get; set; }
-        public List<ContactEmailAddress> Recipients { get; set; }
+        public List<MeetingContact> Recipients { get; set; }
 
         public string TimeZoneName { get; set; }
-
-        /// <summary>
-        /// Should we try and create calendar events for everyone with this Team Call? Default: true
-        /// </summary>
-        public bool? CreateCalendarEvents { get; set; }
 
         #endregion
 

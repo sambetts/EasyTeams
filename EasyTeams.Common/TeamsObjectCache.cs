@@ -20,7 +20,7 @@ namespace EasyTeams.Common
 
         public TeamsManager Manager { get; set; }
 
-        internal async Task<User> GetUser(string email)
+        public async Task<User> GetUser(string email)
         {
             return await userCache.GetResource(email);
         }
@@ -64,9 +64,9 @@ namespace EasyTeams.Common
         internal class UserCache : GraphLookupCache<User>
         {
             public UserCache(TeamsManager teamsManager) : base(teamsManager) { }
-            public async override Task<User> LoadFromGraph(string searchKey)
+            public async override Task<User> LoadFromGraph(string emailAddress)
             {
-                var user = await base.TeamsManager.Client.Users[searchKey].Request().GetAsync();
+                var user = await base.TeamsManager.Client.Users[emailAddress].Request().GetAsync();
                 return user;
             }
         }

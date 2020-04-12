@@ -19,8 +19,8 @@ namespace EasyTeams.Tests
 
             // Fill out the things correctly
             request.MinutesLong = 10;
-            request.OnBehalfOf = new ContactEmailAddress("jimbo@contoso.com");
-            request.Recipients.Add(new ContactEmailAddress("bob@contoso.com"));
+            request.OnBehalfOf = new MeetingContact("jimbo@contoso.com", false);
+            request.Recipients.Add(new MeetingContact("bob@contoso.com", false));
             request.TimeZoneName = TimeZoneInfo.Local.DisplayName;
             request.Start = DateTime.Now;
             request.Subject = "Test";
@@ -33,11 +33,11 @@ namespace EasyTeams.Tests
         {
             Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
             {
-                ContactEmailAddress emailAddress = new ContactEmailAddress("bob");
+                MeetingContact emailAddress = new MeetingContact("bob", false);
             });
 
             // Should work
-            ContactEmailAddress emailAddress = new ContactEmailAddress("jimbo@contoso.com");
+            MeetingContact emailAddress = new MeetingContact("jimbo@contoso.com");
         }
     }
 }

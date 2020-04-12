@@ -22,7 +22,7 @@ namespace EasyTeams.Tests
             TeamsManager manager = new AppIndentityTeamsManager(Settings);
 
             // We can't create online meetings with app identities, so just read all users
-            var allUsers = await manager.GetParticipants(TestObjects.NewConferenceCallRequest);
+            var allUsers = await manager.GetInternalParticipants(TestObjects.NewConferenceCallRequest);
             AssertParticipants(allUsers);
         }
         [TestMethod]
@@ -39,9 +39,9 @@ namespace EasyTeams.Tests
             var msg = new HttpRequestMessage();
             await authProvider.AuthenticateRequestAsync(msg);
             string token = msg.Headers.Authorization.Parameter;
-            var client = new PrecachedAuthTokenTeamsManager(token);
+            var client = new PrecachedAuthTokenTeamsManager(token, Settings);
 
-            var particpants = await client.GetParticipants(TestObjects.NewConferenceCallRequest);
+            var particpants = await client.GetInternalParticipants(TestObjects.NewConferenceCallRequest);
             AssertParticipants(particpants);
         }
 

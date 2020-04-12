@@ -16,12 +16,11 @@ namespace EasyTeams.Tests
                 {
                     Subject = "Test Meeting",
                     Start = DateTime.Now.AddHours(1),
-                    OnBehalfOf = new ContactEmailAddress("admin@M365x176143.onmicrosoft.com"),
-                    Recipients = new List<ContactEmailAddress>()
+                    OnBehalfOf = new MeetingContact("admin@M365x176143.onmicrosoft.com", false),
+                    Recipients = new List<MeetingContact>()
                 {
-                    new ContactEmailAddress("meganb@M365x176143.onmicrosoft.com")
+                    new MeetingContact("meganb@M365x176143.onmicrosoft.com", false)
                 },
-                    CreateCalendarEvents = true
                 };
 
                 return newConfCall;
