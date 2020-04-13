@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyTeams.Common;
-using EasyTeams.Common.BusinessLogic;
+using EasyTeams.Common.Config;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -19,8 +19,8 @@ namespace EasyTeams.Bot.Dialogs
         private const string PromptMsgText = "When do you want the meeting? (example: 'next wednesday, 11am')";
         private const string RepromptMsgText = "Try again and please include date & time ('tomorrow at 9am GMT+1').";
 
-        public DateResolverDialog(string id = null)
-            : base(id ?? nameof(DateResolverDialog))
+        public DateResolverDialog(SystemSettings systemSettings)
+            : base(nameof(DateResolverDialog), systemSettings)
         {
             AddDialog(new DateTimePrompt(nameof(DateTimePrompt), DateTimePromptValidator));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]

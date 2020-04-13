@@ -31,10 +31,10 @@ namespace Tests.UnitTests
             {
                 Subject = "Test Meeting",
                 Start = DateTime.Now.AddHours(1),
-                OnBehalfOf = new MeetingContact("admin@M365x176143.onmicrosoft.com", false),
+                OnBehalfOf = new MeetingContact("meganb@M365x176143.onmicrosoft.com", false),
                 Recipients = new List<MeetingContact>()
                 {
-                    new MeetingContact("meganb@M365x176143.onmicrosoft.com", false),
+                    new MeetingContact("admin@M365x176143.onmicrosoft.com", false),
                     new MeetingContact("someguy@contoso.onmicrosoft.com", true)
                 },
                 TimeZoneName = TimeZoneInfo.Local.Id,

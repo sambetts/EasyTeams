@@ -2,6 +2,12 @@
 
 EasyTeams automates tasks in Teams via a bot that does things for you like setting-up meetings. Written in ASP.NET Core 3.1
 
+## Usage
+To create a conference call, just ask it:
+> New conference call tomorrow at 10am
+
+It'll ask for you details of the meeting, including who to add - internal & external.
+
 ## Installation
 
 Download and open solution with Visual Studio 2019: EasyTeams.sln.

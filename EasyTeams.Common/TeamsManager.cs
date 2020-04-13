@@ -129,41 +129,9 @@ namespace EasyTeamsBot.Common
             var newMeeting = await Client.Users[requestingUser.Id].OnlineMeetings.Request().AddAsync(call);
 
             // Add events.  Fire functions app
-            using (var client = new HttpClient())
-            {
-                CreateEventsRequest requestContent = new CreateEventsRequest() { Meeting = newMeeting, Request = newConfCall };
+            CreateEventsRequest requestContent = new CreateEventsRequest() { Meeting = newMeeting, Request = newConfCall };
 
-                // Add functions key if defined in configuration
-                if (!string.IsNullOrEmpty(Settings.FunctionAppKey))
-                {
-                    client.DefaultRequestHeaders.Add("x-functions-key", Settings.FunctionAppKey);
-                }
-
-                // POST request to functions app to create meetings
-                var response = await client.PostAsync(
-                    Settings.NewEventCreationURL,
-                     new StringContent(JsonConvert.SerializeObject(requestContent), System.Text.Encoding.UTF8, "application/json"));
-                try
-                {
-                    response.EnsureSuccessStatusCode();
-                }
-                catch (HttpRequestException ex)
-                {
-
-                    string requestBody = await response.Content.ReadAsStringAsync();
-                    string msg = $"Could not submit meeting request to function app @ {Settings.NewEventCreationURL}.";
-                    if (throwExceptionIfFuncionAppCallFails)
-                    {
-                        throw new ApplicationException(msg, ex);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"ERROR: {msg}");
-                    }
-                }
-            }
-
-
+            await new FunctionAppProxy(Settings).PostDataToFunctionApp(JsonConvert.SerializeObject(requestContent), throwExceptionIfFuncionAppCallFails);
 
             return newMeeting;
         }

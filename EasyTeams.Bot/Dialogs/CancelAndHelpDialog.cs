@@ -3,6 +3,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using EasyTeams.Common;
+using EasyTeams.Common.Config;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -14,9 +16,12 @@ namespace EasyTeams.Bot.Dialogs
         private const string HelpMsgText = "Ask to create a conference call. At the moment that's all I can do.";
         private const string CancelMsgText = "Ok then; I was bored of this conversation anyway.";
 
-        public CancelAndHelpDialog(string id)
+        private SystemSettings _settings;
+
+        public CancelAndHelpDialog(string id, SystemSettings systemSettings)
             : base(id)
         {
+            _settings = systemSettings;
         }
 
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
@@ -38,6 +43,18 @@ namespace EasyTeams.Bot.Dialogs
 
                 switch (text)
                 {
+                    case "systemtest":
+
+                        string msg = "Testing with config: " + _settings.ToString();
+                        var pingMessage = MessageFactory.Text(msg, msg, InputHints.ExpectingInput);
+                        await innerDc.Context.SendActivityAsync(pingMessage, cancellationToken);
+
+                        var p = new FunctionAppProxy(_settings);
+                        await p.PostDataToFunctionApp(EasyTeamsConstants.FUNCTION_BODY_TEST, true);
+
+                        await innerDc.Context.SendActivityAsync(MessageFactory.Text("That appeared to work!"), cancellationToken);
+
+                        break;
                     case "help":
                     case "?":
                         var helpMessage = MessageFactory.Text(HelpMsgText, HelpMsgText, InputHints.ExpectingInput);
@@ -54,5 +71,6 @@ namespace EasyTeams.Bot.Dialogs
 
             return null;
         }
+
     }
 }

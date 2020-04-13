@@ -18,7 +18,7 @@ namespace EasyTeams.Bot.Dialogs
     /// </summary>
     public class NewConferenceCallDiag : CancelAndHelpDialog
     {
-        public NewConferenceCallDiag(SystemSettings settings) : base(nameof(NewConferenceCallDiag))
+        public NewConferenceCallDiag(SystemSettings settings) : base(nameof(NewConferenceCallDiag), settings)
         {
             this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -30,7 +30,7 @@ namespace EasyTeams.Bot.Dialogs
                        Text = "I need your permission to do access Office 365: people searches, your email address, and your calendar...",
                        Title = "Login to Office 365"
                    }, LoginValidator));
-            AddDialog(new DateResolverDialog());                // When
+            AddDialog(new DateResolverDialog(settings));                // When
             AddDialog(new TextPrompt(nameof(TextPrompt)));      // Subject
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
                {
@@ -159,7 +159,7 @@ namespace EasyTeams.Bot.Dialogs
 
             // Send adaptive card with conference-call details
             var adaptiveCard = CardGenerator.GetConferenceDetailsCard(newCallDetails);
-            var adaptiveCardAttachment = new Microsoft.Bot.Schema.Attachment()
+            var adaptiveCardAttachment = new Attachment()
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
                 Content = adaptiveCard,
@@ -187,7 +187,7 @@ namespace EasyTeams.Bot.Dialogs
 
                 // Send adaptive card with Teams details
                 var adaptiveCard = CardGenerator.GetTeamsCallDetailsCard(call);
-                var adaptiveCardAttachment = new Microsoft.Bot.Schema.Attachment()
+                var adaptiveCardAttachment = new Attachment()
                 {
                     ContentType = "application/vnd.microsoft.card.adaptive",
                     Content = adaptiveCard,

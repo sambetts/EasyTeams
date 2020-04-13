@@ -16,7 +16,7 @@ namespace EasyTeams.Bot.Dialogs
 {
     public class AddPeopleDialog : CancelAndHelpDialog
     {
-        public AddPeopleDialog(SystemSettings settings) : base(nameof(AddPeopleDialog))
+        public AddPeopleDialog(SystemSettings settings) : base(nameof(AddPeopleDialog), settings)
         {
             this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -113,7 +113,10 @@ namespace EasyTeams.Bot.Dialogs
                 var choices = new List<Choice>();
                 foreach (var searchResult in peopleResultsTopTen)
                 {
-                    choices.Add(GetChoice(searchResult));
+                    choices.Add(new Choice()
+                    {
+                        Value = $"{searchResult.DisplayName} ({searchResult.UserPrincipalName})"
+                    });
                 }
 
                 // Ask user to select a person
@@ -131,14 +134,6 @@ namespace EasyTeams.Bot.Dialogs
             }
         }
 
-        private Choice GetChoice(Person person)
-        {
-            return new Choice()
-            {
-                Value = $"{person.DisplayName} ({person.UserPrincipalName})",
-                Synonyms = new List<string>() { person.UserPrincipalName, person.DisplayName }
-            };
-        }
 
         private async Task<DialogTurnResult> ConfirmName(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {

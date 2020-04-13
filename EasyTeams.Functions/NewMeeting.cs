@@ -32,6 +32,12 @@ namespace EasyTeams.Functions
 
             string requestBody = await new System.IO.StreamReader(req.Body).ReadToEndAsync();
 
+            // Is this a ping test?
+            if (requestBody == EasyTeamsConstants.FUNCTION_BODY_TEST)
+            {
+                return new OkObjectResult("Ping test OK");
+            }
+
             CreateEventsRequest newMeeting = JsonConvert.DeserializeObject<CreateEventsRequest>(requestBody);
             if (newMeeting == null) return new BadRequestObjectResult("Invalid OnlineMeeting in body");
 

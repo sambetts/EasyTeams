@@ -2,17 +2,18 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /// <summary>
+    /// A bot that says hello
+    /// </summary>
     public class GraphWelcomeBot<T> : DialogBot<T>
         where T : Dialog
     {
@@ -40,13 +41,5 @@ namespace Microsoft.BotBuilderSamples.Bots
             // Run the Dialog with the new Token Response Event Activity.
             await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
         }
-
-        //protected override async Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-        //{
-        //    Logger.LogInformation("Running dialog with Teams Signin Verify State Activity.");
-
-        //    // Run the Dialog with the new Teams Signin Verify State  Activity.
-        //    await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
-        //}
     }
 }

@@ -27,19 +27,37 @@
         <a href="https://github.com/microsoft/BotFramework-WebChat">Bot Framework WebChat</a>.
     </p>
 </div>
-<div id="webchat" role="main"></div>
+
+
+<div id="webchat"></div>
 <script>
-    window.WebChat.renderWebChat(
-        {
-            directLine: window.WebChat.createDirectLine({
-                token: 'IuqzUSlhokY.DNH57w0e_RAYTZNBYsaqrE8DD6BVWQhq55j7CFmejRQ'
-            }),
-            userID: '@User.Identity.Name',
-            username: '@User.Identity.Name',
-            locale: 'en-US',
-            botAvatarInitials: 'WC',
-            userAvatarInitials: 'WW'
-        },
-        document.getElementById('webchat')
-    );
+
+    <!-- https://github.com/microsoft/BotFramework-WebChat/tree/master/samples/04.api/a.welcome-event#completed-code -->
+    (async function () {
+        const store = window.WebChat.createStore({}, ({ dispatch }) => next => action => {
+            if (action.type === 'DIRECT_LINE/CONNECT_FULFILLED') {
+                dispatch({
+                    type: 'WEB_CHAT/SEND_EVENT',
+                    payload: {
+                        name: 'webchat/join',
+                        value: { language: window.navigator.language }
+                    }
+                });
+            }
+
+            return next(action);
+        });
+
+        window.WebChat.renderWebChat(
+            {
+                directLine: window.WebChat.createDirectLine({
+                    token: 'IuqzUSlhokY.DNH57w0e_RAYTZNBYsaqrE8DD6BVWQhq55j7CFmejRQ'
+                }),
+                store
+            },
+            document.getElementById('webchat')
+        );
+
+        document.querySelector('#webchat > *').focus();
+    })().catch(err => console.error(err));
 </script>
